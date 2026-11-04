@@ -28,7 +28,9 @@ public class CourierLoginApiTests {
         courierApiTests.createCourier(validCourierJson);
 
         var response = courierApiTests.loginCourier(validCourierJson);
+        response.then().assertThat().statusCode(200);
 
         courierApiTests.deleteCourier(response.path("id").toString());
+
     }
 }
