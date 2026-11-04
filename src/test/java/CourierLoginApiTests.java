@@ -11,9 +11,18 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static org.hamcrest.Matchers.lessThan;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class CourierLoginApiTests {
+
+    private CourierApiTests courierApiTests;
+    private String validCourierJson;
+
+    public CourierLoginApiTests() throws IOException {
+        courierApiTests = new CourierApiTests();
+        validCourierJson = courierApiTests.getValidCourierJson();
+    }
 
     @BeforeEach
     public void setUp() {
@@ -22,15 +31,30 @@ public class CourierLoginApiTests {
 
     @DisplayName("Существующий курьер может авторизоваться")
     @Test
-    public void existedCourierCanLogin() throws IOException {
-        var courierApiTests = new CourierApiTests();
-        var validCourierJson = courierApiTests.getValidCourierJson();
-        courierApiTests.createCourier(validCourierJson);
-
+    public void existedCourierCanLoginResult200() {
         var response = courierApiTests.loginCourier(validCourierJson);
         response.then().assertThat().statusCode(200);
 
         courierApiTests.deleteCourier(response.path("id").toString());
+    }
 
+    @DisplayName("Для авторизации нужно передать поле login")
+    @Test
+    public void notAllowLoginWithoutLoginFieldResult400() {
+        JsonObject jsonObject = new Gson().fromJson(String.valueOf(validCourierJson), JsonObject.class);
+        jsonObject.remove("login");
+
+        var response = courierApiTests.loginCourier(jsonObject.toString());
+        response.then().assertThat().statusCode(400);
+    }
+
+    @DisplayName("Для авторизации нужно передать поле password")
+    @Test
+    public void notAllowLoginWithoutPasswordFieldResult400() {
+        JsonObject jsonObject = new Gson().fromJson(String.valueOf(validCourierJson), JsonObject.class);
+        jsonObject.remove("password");
+
+        var response = courierApiTests.loginCourier(jsonObject.toString());
+        response.then().assertThat().statusCode(400);
     }
 }

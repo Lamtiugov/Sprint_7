@@ -3,8 +3,10 @@ import com.google.gson.JsonObject;
 import io.qameta.allure.Description;
 import io.qameta.allure.Step;
 import io.restassured.RestAssured;
+import io.restassured.config.HttpClientConfig;
 import io.restassured.response.Response;
 import jdk.jfr.Category;
+import org.apache.http.params.CoreConnectionPNames;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -33,6 +35,13 @@ public class CourierApiTests {
     @BeforeEach
     public void setUp() {
         RestAssured.baseURI = "https://qa-scooter.education-services.ru/api/v1/courier";
+        RestAssured.config()
+                .httpClient(HttpClientConfig.httpClientConfig()
+//                        .setParam("http.socket.timeout",1000)
+//                        .setParam("http.connection.timeout", 1000));
+
+                .setParam(CoreConnectionPNames.CONNECTION_TIMEOUT, 2000)  // 5 секунд
+                .setParam(CoreConnectionPNames.SO_TIMEOUT, 2000));    // 5 секунд
     }
 
     @AfterEach
@@ -131,7 +140,6 @@ public class CourierApiTests {
                         .when()
                         .post("login");
         System.out.println(response.body().asString());
-        response.then().assertThat().statusCode(200);
         return response;
     }
 
