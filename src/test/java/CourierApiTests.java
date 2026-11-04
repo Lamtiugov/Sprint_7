@@ -24,9 +24,6 @@ import static org.hamcrest.Matchers.equalTo;
 public class CourierApiTests {
 
     private String validCourierJson = Files.readString(Path.of("src/test/resources/ValidCourierParams.json"), StandardCharsets.UTF_8);
-    private String loginOfCourier = "ninjaLamyiugov";
-    private String passwordOfCourier = "1234";
-    private String firstNameOfCourier = "saske";
     private boolean isCourierExist;
 
     public CourierApiTests() throws IOException {
@@ -41,7 +38,7 @@ public class CourierApiTests {
     @AfterEach
     public void deleteCourier() {
         if (isCourierExist) {
-            String id = loginCourier(validCourierJson);
+            String id = loginCourier(validCourierJson).path("id").toString();
             // Удаление курьера по ID
             String deleteResult = deleteCourier(id);
         }
@@ -123,7 +120,7 @@ public class CourierApiTests {
     }
 
     @Step("Логин курьера в системе с существующим Логином и правильным паролем")
-    public String loginCourier(String courierJson) {
+    public Response loginCourier(String courierJson) {
         JsonObject jsonObject = new Gson().fromJson(String.valueOf(courierJson), JsonObject.class);
         jsonObject.remove("firstName");
         var response =
@@ -135,18 +132,25 @@ public class CourierApiTests {
                         .post("login");
         System.out.println(response.body().asString());
         response.then().assertThat().statusCode(200);
-        return response.path("id").toString();
+        return response;
     }
 
     @Step("Удалить курьера c существующим ID")
     String deleteCourier(String id) {
         var response =
                 given()
-                        //.queryParam(":id", "14395")
                         .when()
                         .delete(id);
         System.out.println(response.body().asString());
         response.then().assertThat().statusCode(200);
         return response.body().asString();
+    }
+
+    public String getValidCourierJson() {
+        return validCourierJson;
+    }
+
+    public boolean isCourierExist() {
+        return isCourierExist;
     }
 }

@@ -1,7 +1,9 @@
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import io.restassured.RestAssured;
+import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -9,22 +11,24 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 public class CourierLoginApiTests {
-
-    private String validCourierJson = Files.readString(Path.of("src/test/resources/ValidCourierParams.json"), StandardCharsets.UTF_8);
-
-    public CourierLoginApiTests() throws IOException {
-    }
 
     @BeforeEach
     public void setUp() {
         RestAssured.baseURI = "https://qa-scooter.education-services.ru/api/v1/courier";
     }
 
+    @DisplayName("Существующий курьер может авторизоваться")
     @Test
-    public void test() {
-        JsonObject jsonObject = new Gson().fromJson(String.valueOf(validCourierJson), JsonObject.class);
-        jsonObject.remove("firstName");
-        System.out.println(jsonObject.toString());
+    public void existedCourierCanLogin() throws IOException {
+        var courierApiTests = new CourierApiTests();
+        var validCourierJson = courierApiTests.getValidCourierJson();
+        courierApiTests.createCourier(validCourierJson);
+
+        var response = courierApiTests.loginCourier(validCourierJson);
+
+        courierApiTests.deleteCourier(response.path("id").toString());
     }
 }
