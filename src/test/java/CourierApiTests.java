@@ -35,13 +35,6 @@ public class CourierApiTests {
     @BeforeEach
     public void setUp() {
         RestAssured.baseURI = "https://qa-scooter.education-services.ru/api/v1/courier";
-        RestAssured.config()
-                .httpClient(HttpClientConfig.httpClientConfig()
-//                        .setParam("http.socket.timeout",1000)
-//                        .setParam("http.connection.timeout", 1000));
-
-                .setParam(CoreConnectionPNames.CONNECTION_TIMEOUT, 2000)  // 5 секунд
-                .setParam(CoreConnectionPNames.SO_TIMEOUT, 2000));    // 5 секунд
     }
 
     @AfterEach
