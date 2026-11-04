@@ -8,6 +8,7 @@ import ru.yandex.praktikum.Courier;
 
 import static io.restassured.RestAssured.given;
 
+@jdk.jfr.Description("Тесты /api/v1/courier")
 public class CourierApiTests {
 
     private String loginOfCourier = "ninjaLamyiugov";
@@ -16,7 +17,7 @@ public class CourierApiTests {
 
     @BeforeEach
     public void setUp() {
-        RestAssured.baseURI = "https://qa-scooter.education-services.ru/api/v1";
+        RestAssured.baseURI = "https://qa-scooter.education-services.ru/api/v1/courier";
     }
 
     // Создание курьера с валидными значениями
@@ -45,7 +46,7 @@ public class CourierApiTests {
                         .auth().none()
                         .body(courier.toString())
                         .when()
-                        .post("/courier/");
+                        .post();
         System.out.println(response.body().asString());
         response.then().assertThat().statusCode(201);
 
@@ -60,7 +61,7 @@ public class CourierApiTests {
                         .auth().none()
                         .body('{' + courier.getLogin() + ',' + courier.getPassword() + '}')
                         .when()
-                        .post("/courier/login");
+                        .post("/login");
         System.out.println(response.body().asString());
         response.then().assertThat().statusCode(200);
         return response.path("id").toString();
@@ -72,7 +73,7 @@ public class CourierApiTests {
                 given()
                         //.queryParam(":id", "14395")
                         .when()
-                        .delete("/courier/"+id);
+                        .delete("/"+id);
         System.out.println(response.body().asString());
         response.then().assertThat().statusCode(200);
         return response.body().asString();
