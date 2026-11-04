@@ -1,3 +1,5 @@
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import io.qameta.allure.Description;
 import io.qameta.allure.Step;
 import io.restassured.RestAssured;
@@ -9,16 +11,26 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.yandex.praktikum.Courier;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 
 @jdk.jfr.Description("Тесты /api/v1/courier")
 public class CourierApiTests {
 
+    private String validCourierJson = Files.readString(Path.of("src/test/resources/ValidCourierParams.json"), StandardCharsets.UTF_8);
     private String loginOfCourier = "ninjaLamyiugov";
     private String passwordOfCourier = "1234";
     private String firstNameOfCourier = "saske";
     private boolean isCourierExist;
+
+    public CourierApiTests() throws IOException {
+    }
 
 
     @BeforeEach
@@ -29,8 +41,7 @@ public class CourierApiTests {
     @AfterEach
     public void deleteCourier() {
         if (isCourierExist) {
-            var courier = new Courier(loginOfCourier, passwordOfCourier, firstNameOfCourier);
-            String id = loginCourier(courier);
+            String id = loginCourier(validCourierJson);
             // Удаление курьера по ID
             String deleteResult = deleteCourier(id);
         }
@@ -39,21 +50,19 @@ public class CourierApiTests {
     @DisplayName("Создание курьера с валидными значениями")
     @Test
     public void createCourierResult201() {
-        var courier = new Courier(loginOfCourier, passwordOfCourier, firstNameOfCourier);
-        var response = createCourier(courier);
+        var response = createCourier(validCourierJson);
         response.then().assertThat().statusCode(201)
                 .and()
                 .body("ok", equalTo(true));
-        this.isCourierExist = true;
+        isCourierExist = true;
     }
 
     @DisplayName("Нельзя создать двух одинаковых курьеров")
     @Test
     public void notAllowToCreateCourierCloneResult409() {
-        var courier = new Courier(loginOfCourier, passwordOfCourier, firstNameOfCourier);
-        var response = createCourier(courier);
-        response = createCourier(courier);
-        this.isCourierExist = true;
+        var response = createCourier(validCourierJson);
+        response = createCourier(validCourierJson);
+        isCourierExist = true;
         response.then().assertThat().statusCode(409);
     }
 
@@ -61,17 +70,19 @@ public class CourierApiTests {
     @Test
     public void notAllowToCreateCourierWithoutLoginResult400()
     {
-        var courier = new Courier(null, passwordOfCourier, firstNameOfCourier);
-        var response = createCourier(courier);
+        JsonObject jsonObject = new Gson().fromJson(String.valueOf(validCourierJson), JsonObject.class);
+        jsonObject.remove("login");
+        var response = createCourier(jsonObject.toString());
         response.then().assertThat().statusCode(400);
     }
 
-    @DisplayName("Нельзя создать пользователя без login")
+    @DisplayName("Нельзя создать пользователя без password")
     @Test
     public void notAllowToCreateCourierWithoutPasswordResult400()
     {
-        var courier = new Courier(loginOfCourier, null, firstNameOfCourier);
-        var response = createCourier(courier);
+        JsonObject jsonObject = new Gson().fromJson(String.valueOf(validCourierJson), JsonObject.class);
+        jsonObject.remove("password");
+        var response = createCourier(jsonObject.toString());
         response.then().assertThat().statusCode(400);
     }
 
@@ -79,8 +90,9 @@ public class CourierApiTests {
     @Test
     public void allowToCreateCourierWithoutFirstNameResult201()
     {
-        var courier = new Courier(loginOfCourier, passwordOfCourier, null);
-        var response = createCourier(courier);
+        JsonObject jsonObject = new Gson().fromJson(String.valueOf(validCourierJson), JsonObject.class);
+        jsonObject.remove("firstName");
+        var response = createCourier(jsonObject.toString());
         response.then().assertThat().statusCode(201);
         isCourierExist = true;
     }
@@ -88,24 +100,22 @@ public class CourierApiTests {
     @DisplayName("Нельзя создать пользователя с логином, который уже есть")
     @Test
     public void notAllowToCreateWithExistedLoginResult409() {
-        var courier = new Courier(loginOfCourier, passwordOfCourier, firstNameOfCourier);
-        createCourier(courier);
+        createCourier(validCourierJson);
         isCourierExist = true;
-        courier = new Courier(loginOfCourier, "11111", "Крокодил Гена");
-
-        var response = createCourier(courier);
-        System.out.println(response.statusCode());
-        System.out.println(response.asPrettyString());
+        JsonObject jsonObject = new Gson().fromJson(String.valueOf(validCourierJson), JsonObject.class);
+        jsonObject.addProperty("password", "11111");
+        jsonObject.addProperty("firstName", "11111");
+        var response = createCourier(jsonObject.toString());
         response.then().assertThat().statusCode(409);
     }
 
     @Step("Создание курьера")
-    public Response createCourier(Courier courier) {
+    public Response createCourier(String courierJson) {
         var response =
                 given()
                         .header("Content-type", "application/json")
                         .auth().none()
-                        .body(courier.toString())
+                        .body(courierJson)
                         .when()
                         .post();
         System.out.println(response.body().asString());
@@ -113,12 +123,14 @@ public class CourierApiTests {
     }
 
     @Step("Логин курьера в системе с существующим Логином и правильным паролем")
-    public String loginCourier(Courier courier) {
+    public String loginCourier(String courierJson) {
+        JsonObject jsonObject = new Gson().fromJson(String.valueOf(courierJson), JsonObject.class);
+        jsonObject.remove("firstName");
         var response =
                 given()
                         .header("Content-type", "application/json")
                         .auth().none()
-                        .body('{' + courier.getLogin() + ',' + courier.getPassword() + '}')
+                        .body(jsonObject.toString())
                         .when()
                         .post("login");
         System.out.println(response.body().asString());

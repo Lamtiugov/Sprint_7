@@ -1,5 +1,8 @@
 package ru.yandex.praktikum;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 public class Courier {
     private String login;
@@ -13,7 +16,7 @@ public class Courier {
     }
 
     public String getLogin() {
-        return "\"login\":\"" + login + '"';
+        return login;
     }
 
     public void setLogin(String login) {
@@ -21,7 +24,7 @@ public class Courier {
     }
 
     public String getPassword() {
-        return "\"password\":\"" + password + '"';
+        return password;
     }
 
     public void setPassword(String password) {
@@ -29,7 +32,7 @@ public class Courier {
     }
 
     public String getFirstName() {
-        return "\"firstName\":\"" + firstName + '"';
+        return firstName;
     }
 
     public void setFirstName(String firstName) {
@@ -38,7 +41,10 @@ public class Courier {
 
     @Override
     public String toString() {
-        Gson gson = new Gson();
-        return gson.toJson(this);
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("login", login);
+        jsonObject.addProperty("password", password);
+        jsonObject.addProperty("firstName", firstName);
+        return jsonObject.getAsString();
     }
 }
