@@ -23,8 +23,7 @@ public class CourierApiTests extends CommonTestsSteps {
     private String validCourierJson = Files.readString(Path.of("src/test/resources/ValidCourierParams.json"), StandardCharsets.UTF_8);
     private boolean isCourierExist;
 
-    public CourierApiTests() throws IOException {
-    }
+    public CourierApiTests() throws IOException {}
 
     @BeforeEach
     public void setUp() {
@@ -34,10 +33,10 @@ public class CourierApiTests extends CommonTestsSteps {
     @AfterEach
     public void deleteExistedCourier() {
         if (isCourierExist) {
-            String courierJson = removeParamFromJson(validCourierJson, CourierJsonFields.FIRST_NAME.getValue());
-            String id = loginCourier(courierJson).path("id").toString();
+            var courierJson = removeParamFromJson(validCourierJson, CourierJsonFields.FIRST_NAME.getValue());
+            var id = loginCourier(courierJson).path("id").toString();
             // Удаление курьера по ID
-            String deleteResult = deleteCourier(id);
+            var deleteResult = deleteCourier(id);
         }
     }
 
@@ -62,8 +61,7 @@ public class CourierApiTests extends CommonTestsSteps {
 
     @DisplayName("Нельзя создать пользователя без login")
     @Test
-    public void notAllowToCreateCourierWithoutLoginResult400()
-    {
+    public void notAllowToCreateCourierWithoutLoginResult400() {
         var courierJson = removeParamFromJson(validCourierJson, CourierJsonFields.LOGIN.getValue());
         var response = createCourier(courierJson);
         response.then().assertThat().statusCode(400);
@@ -71,8 +69,7 @@ public class CourierApiTests extends CommonTestsSteps {
 
     @DisplayName("Нельзя создать пользователя без password")
     @Test
-    public void notAllowToCreateCourierWithoutPasswordResult400()
-    {
+    public void notAllowToCreateCourierWithoutPasswordResult400() {
         var courierJson = removeParamFromJson(validCourierJson, CourierJsonFields.PASSWORD.getValue());
         var response = createCourier(courierJson);
         response.then().assertThat().statusCode(400);
@@ -80,8 +77,7 @@ public class CourierApiTests extends CommonTestsSteps {
 
     @DisplayName("Ошибка: можно создать пользователя без First Name")
     @Test
-    public void allowToCreateCourierWithoutFirstNameResult201()
-    {
+    public void allowToCreateCourierWithoutFirstNameResult201() {
         var courierJson = removeParamFromJson(validCourierJson, CourierJsonFields.FIRST_NAME.getValue());
         var response = createCourier(courierJson);
         response.then().assertThat().statusCode(201);
@@ -126,15 +122,15 @@ public class CourierApiTests extends CommonTestsSteps {
         return response;
     }
 
-    @Step("Удалить курьера c существующим ID")
-    String deleteCourier(String id) {
+    @Step("Удалить курьера по ID")
+    Response deleteCourier(String id) {
         var response =
                 given()
                         .when()
                         .delete(id);
         System.out.println(response.body().asString());
         response.then().assertThat().statusCode(200);
-        return response.body().asString();
+        return response;
     }
 
     public String getValidCourierJson() {
