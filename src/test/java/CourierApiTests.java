@@ -95,6 +95,32 @@ public class CourierApiTests extends CommonTestsSteps {
         response.then().assertThat().statusCode(409);
     }
 
+
+    @DisplayName("Удаление с пустым ID выдает 400")
+    @Test
+    public void deleteCourierWithoutID() {
+        var response = deleteCourier("");
+        response.then().assertThat().statusCode(400);
+    }
+
+    @DisplayName("Успешное удаление возвращает ok: true")
+    @Test
+    public void deleteWithExistedIdReturnOkTrue() {
+        createCourier(validCourierJson);
+        var response = loginCourier(validCourierJson);
+        var id = response.path("id").toString();
+        response = deleteCourier(id);
+        response.then().assertThat().body("ok", equalTo(true));
+    }
+
+    @DisplayName("Удаление с несуществующим ID выдает 404")
+    @Test
+    public void deleteCourierWithNotExistedID() {
+        // Конечно тут надо бы ззалогиниться сперва попробовать...
+        var response = deleteCourier("-1");
+        response.then().assertThat().statusCode(404);
+    }
+
     @Step("Создание курьера")
     public Response createCourier(String courierJson) {
         var response =
@@ -104,7 +130,7 @@ public class CourierApiTests extends CommonTestsSteps {
                         .body(courierJson)
                         .when()
                         .post();
-        System.out.println(response.body().asString());
+        System.out.println(response.asPrettyString());
         return response;
     }
 
@@ -118,7 +144,7 @@ public class CourierApiTests extends CommonTestsSteps {
                         .body(courierJson)
                         .when()
                         .post("login");
-        System.out.println(response.body().asString());
+        System.out.println(response.asPrettyString());
         return response;
     }
 
@@ -128,8 +154,7 @@ public class CourierApiTests extends CommonTestsSteps {
                 given()
                         .when()
                         .delete(id);
-        System.out.println(response.body().asString());
-        response.then().assertThat().statusCode(200);
+        System.out.println(response.asPrettyString());
         return response;
     }
 
