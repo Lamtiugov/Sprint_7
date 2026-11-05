@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.yandex.praktikum.Courier;
+import ru.yandex.praktikum.constants.CourierJsonFields;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,7 +41,8 @@ public class CourierApiTests {
     @AfterEach
     public void deleteCourier() {
         if (isCourierExist) {
-            String id = loginCourier(validCourierJson).path("id").toString();
+            String courierJson = removeParamFromJson(validCourierJson, CourierJsonFields.FIRST_NAME.getValue());
+            String id = loginCourier(courierJson).path("id").toString();
             // Удаление курьера по ID
             String deleteResult = deleteCourier(id);
         }
@@ -60,8 +62,8 @@ public class CourierApiTests {
     @Test
     public void notAllowToCreateCourierCloneResult409() {
         var response = createCourier(validCourierJson);
-        response = createCourier(validCourierJson);
         isCourierExist = true;
+        response = createCourier(validCourierJson);
         response.then().assertThat().statusCode(409);
     }
 
@@ -69,9 +71,8 @@ public class CourierApiTests {
     @Test
     public void notAllowToCreateCourierWithoutLoginResult400()
     {
-        JsonObject jsonObject = new Gson().fromJson(String.valueOf(validCourierJson), JsonObject.class);
-        jsonObject.remove("login");
-        var response = createCourier(jsonObject.toString());
+        var courierJson = removeParamFromJson(validCourierJson, CourierJsonFields.LOGIN.getValue());
+        var response = createCourier(courierJson);
         response.then().assertThat().statusCode(400);
     }
 
@@ -79,9 +80,8 @@ public class CourierApiTests {
     @Test
     public void notAllowToCreateCourierWithoutPasswordResult400()
     {
-        JsonObject jsonObject = new Gson().fromJson(String.valueOf(validCourierJson), JsonObject.class);
-        jsonObject.remove("password");
-        var response = createCourier(jsonObject.toString());
+        var courierJson = removeParamFromJson(validCourierJson, CourierJsonFields.PASSWORD.getValue());
+        var response = createCourier(courierJson);
         response.then().assertThat().statusCode(400);
     }
 
@@ -89,9 +89,8 @@ public class CourierApiTests {
     @Test
     public void allowToCreateCourierWithoutFirstNameResult201()
     {
-        JsonObject jsonObject = new Gson().fromJson(String.valueOf(validCourierJson), JsonObject.class);
-        jsonObject.remove("firstName");
-        var response = createCourier(jsonObject.toString());
+        var courierJson = removeParamFromJson(validCourierJson, CourierJsonFields.FIRST_NAME.getValue());
+        var response = createCourier(courierJson);
         response.then().assertThat().statusCode(201);
         isCourierExist = true;
     }
@@ -102,8 +101,8 @@ public class CourierApiTests {
         createCourier(validCourierJson);
         isCourierExist = true;
         JsonObject jsonObject = new Gson().fromJson(String.valueOf(validCourierJson), JsonObject.class);
-        jsonObject.addProperty("password", "11111");
-        jsonObject.addProperty("firstName", "11111");
+        jsonObject.addProperty(CourierJsonFields.PASSWORD.getValue(), "11111");
+        jsonObject.addProperty(CourierJsonFields.FIRST_NAME.getValue(), "11111");
         var response = createCourier(jsonObject.toString());
         response.then().assertThat().statusCode(409);
     }
@@ -123,13 +122,12 @@ public class CourierApiTests {
 
     @Step("Логин курьера в системе с существующим Логином и правильным паролем")
     public Response loginCourier(String courierJson) {
-        JsonObject jsonObject = new Gson().fromJson(String.valueOf(courierJson), JsonObject.class);
-        jsonObject.remove("firstName");
+        courierJson = removeParamFromJson(courierJson, CourierJsonFields.FIRST_NAME.getValue());
         var response =
                 given()
                         .header("Content-type", "application/json")
                         .auth().none()
-                        .body(jsonObject.toString())
+                        .body(courierJson)
                         .when()
                         .post("login");
         System.out.println(response.body().asString());
@@ -145,6 +143,12 @@ public class CourierApiTests {
         System.out.println(response.body().asString());
         response.then().assertThat().statusCode(200);
         return response.body().asString();
+    }
+
+    public String removeParamFromJson(String json, String param) {
+        JsonObject jsonObject = new Gson().fromJson(String.valueOf(json), JsonObject.class);
+        jsonObject.remove(param);
+        return jsonObject.toString();
     }
 
     public String getValidCourierJson() {

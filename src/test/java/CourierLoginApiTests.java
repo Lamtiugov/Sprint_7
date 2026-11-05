@@ -5,6 +5,7 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import ru.yandex.praktikum.constants.CourierJsonFields;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -41,20 +42,21 @@ public class CourierLoginApiTests {
     @DisplayName("Для авторизации нужно передать поле login")
     @Test
     public void notAllowLoginWithoutLoginFieldResult400() {
-        JsonObject jsonObject = new Gson().fromJson(String.valueOf(validCourierJson), JsonObject.class);
-        jsonObject.remove("login");
-
-        var response = courierApiTests.loginCourier(jsonObject.toString());
+        var courierJson = courierApiTests.removeParamFromJson(validCourierJson, CourierJsonFields.LOGIN.getValue());
+        var response = courierApiTests.loginCourier(courierJson);
         response.then().assertThat().statusCode(400);
     }
 
     @DisplayName("Для авторизации нужно передать поле password")
     @Test
     public void notAllowLoginWithoutPasswordFieldResult400() {
-        JsonObject jsonObject = new Gson().fromJson(String.valueOf(validCourierJson), JsonObject.class);
-        jsonObject.remove("password");
-
-        var response = courierApiTests.loginCourier(jsonObject.toString());
+        var courierJson = courierApiTests.removeParamFromJson(validCourierJson, CourierJsonFields.PASSWORD.getValue());
+        var response = courierApiTests.loginCourier(courierJson);
         response.then().assertThat().statusCode(400);
+    }
+
+    @Test
+    public void test() {
+        System.out.println(CourierJsonFields.FIRST_NAME.name());
     }
 }
