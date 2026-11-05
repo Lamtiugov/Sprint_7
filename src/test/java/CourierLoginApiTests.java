@@ -100,10 +100,4 @@ public class CourierLoginApiTests extends CommonTestsSteps {
         response.then().assertThat().statusCode(404);
     }
 
-
-
-    @Test
-    public void test() {
-        System.out.println(CourierJsonFields.FIRST_NAME.name());
-    }
 }

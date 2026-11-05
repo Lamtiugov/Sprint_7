@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+
 import ru.yandex.praktikum.constants.OrderListRequestParams;
 import ru.yandex.praktikum.constants.ScooterColors;
 
@@ -87,4 +88,5 @@ public class OrdersApiTests extends CommonTestsSteps {
                 Arguments.of(new JSONArray())
         );
     }
+
 }
