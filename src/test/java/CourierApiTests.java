@@ -77,7 +77,7 @@ public class CourierApiTests extends CommonTestsSteps {
     @Test
     public void notAllowToCreateCourierWithoutPasswordResult400()
     {
-        var courierJson = removeParamFromJson(validCourierJson, CourierJsonFields.PASSWORD.getValue());
+        var courierJson = removeParamFromJson(validCourierJson, CourierJsonFields.PASSWORD);
         var response = createCourier(courierJson);
         response.then().assertThat().statusCode(400);
     }
@@ -97,12 +97,9 @@ public class CourierApiTests extends CommonTestsSteps {
     public void notAllowToCreateWithExistedLoginResult409() {
         createCourier(validCourierJson);
         isCourierExist = true;
-        JsonObject jsonObject = new Gson().fromJson(String.valueOf(validCourierJson), JsonObject.class);
-        jsonObject.addProperty();
-        jsonObject.addProperty(CourierJsonFields.FIRST_NAME.getValue(), "11111");
-        var courierJson = setParamToJason(validCourierJson, CourierJsonFields.PASSWORD.getValue(), "11111");
-        courierJson = setParamToJason();
-        var response = createCourier(jsonObject.toString());
+        var courierJson = setParamToJason(validCourierJson, CourierJsonFields.PASSWORD, "11111");
+        courierJson = setParamToJason(validCourierJson, CourierJsonFields.FIRST_NAME, "11111");
+        var response = createCourier(courierJson);
         response.then().assertThat().statusCode(409);
     }
 
@@ -119,7 +116,7 @@ public class CourierApiTests extends CommonTestsSteps {
         return response;
     }
 
-    @Step("Логин курьера в системе с существующим Логином и правильным паролем")
+    @Step("Логин курьера")
     public Response loginCourier(String courierJson) {
         courierJson = removeParamFromJson(courierJson, CourierJsonFields.FIRST_NAME);
         var response =
