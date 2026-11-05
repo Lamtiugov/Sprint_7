@@ -66,7 +66,7 @@ public class CourierLoginApiTests extends CommonTestsSteps {
         courierApiTests.createCourier(validCourierJson);
         var id = courierApiTests.loginCourier(validCourierJson).path("id").toString();
 
-        var courierJson = setParamToJason(validCourierJson, CourierJsonFields.PASSWORD, "111111");
+        var courierJson = setParamToJson(validCourierJson, CourierJsonFields.PASSWORD.getValue(), "111111");
         var response = courierApiTests.loginCourier(courierJson);
 
         courierApiTests.deleteCourier(id);
@@ -80,7 +80,7 @@ public class CourierLoginApiTests extends CommonTestsSteps {
         courierApiTests.createCourier(validCourierJson);
         var id = courierApiTests.loginCourier(validCourierJson).path("id").toString();
 
-        var courierJson = setParamToJason(validCourierJson, CourierJsonFields.LOGIN, "111111");
+        var courierJson = setParamToJson(validCourierJson, CourierJsonFields.LOGIN.getValue(), "111111");
         var response = courierApiTests.loginCourier(courierJson);
 
         courierApiTests.deleteCourier(id);
@@ -91,9 +91,9 @@ public class CourierLoginApiTests extends CommonTestsSteps {
     @DisplayName("Нельзя авторизоваться под несуществующим пользователем")
     @Test
     public void notAllowLoginNotExistedCourierResult404() {
-        var courierJson = setParamToJason("{}", CourierJsonFields.LOGIN, "-1");
-        courierJson = setParamToJason(courierJson, CourierJsonFields.PASSWORD, "-1");
-        courierJson = setParamToJason(courierJson, CourierJsonFields.FIRST_NAME, "-1");
+        var courierJson = setParamToJson("{}", CourierJsonFields.LOGIN.getValue(), "-1");
+        courierJson = setParamToJson(courierJson, CourierJsonFields.PASSWORD.getValue(), "-1");
+        courierJson = setParamToJson(courierJson, CourierJsonFields.FIRST_NAME.getValue(), "-1");
 
         var response = courierApiTests.loginCourier(courierJson);
 

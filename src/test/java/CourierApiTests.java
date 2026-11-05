@@ -1,6 +1,3 @@
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import io.qameta.allure.Description;
 import io.qameta.allure.Step;
 
 import io.restassured.RestAssured;
@@ -28,7 +25,6 @@ public class CourierApiTests extends CommonTestsSteps {
 
     public CourierApiTests() throws IOException {
     }
-
 
     @BeforeEach
     public void setUp() {
@@ -97,8 +93,8 @@ public class CourierApiTests extends CommonTestsSteps {
     public void notAllowToCreateWithExistedLoginResult409() {
         createCourier(validCourierJson);
         isCourierExist = true;
-        var courierJson = setParamToJason(validCourierJson, CourierJsonFields.PASSWORD, "11111");
-        courierJson = setParamToJason(validCourierJson, CourierJsonFields.FIRST_NAME, "11111");
+        var courierJson = setParamToJson(validCourierJson, CourierJsonFields.PASSWORD.getValue(), "11111");
+        courierJson = setParamToJson(validCourierJson, CourierJsonFields.FIRST_NAME.getValue(), "11111");
         var response = createCourier(courierJson);
         response.then().assertThat().statusCode(409);
     }
