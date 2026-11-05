@@ -34,7 +34,7 @@ public class CourierApiTests extends CommonTestsSteps {
     @AfterEach
     public void deleteExistedCourier() {
         if (isCourierExist) {
-            String courierJson = removeParamFromJson(validCourierJson, CourierJsonFields.FIRST_NAME);
+            String courierJson = removeParamFromJson(validCourierJson, CourierJsonFields.FIRST_NAME.getValue());
             String id = loginCourier(courierJson).path("id").toString();
             // Удаление курьера по ID
             String deleteResult = deleteCourier(id);
@@ -64,7 +64,7 @@ public class CourierApiTests extends CommonTestsSteps {
     @Test
     public void notAllowToCreateCourierWithoutLoginResult400()
     {
-        var courierJson = removeParamFromJson(validCourierJson, CourierJsonFields.LOGIN);
+        var courierJson = removeParamFromJson(validCourierJson, CourierJsonFields.LOGIN.getValue());
         var response = createCourier(courierJson);
         response.then().assertThat().statusCode(400);
     }
@@ -73,7 +73,7 @@ public class CourierApiTests extends CommonTestsSteps {
     @Test
     public void notAllowToCreateCourierWithoutPasswordResult400()
     {
-        var courierJson = removeParamFromJson(validCourierJson, CourierJsonFields.PASSWORD);
+        var courierJson = removeParamFromJson(validCourierJson, CourierJsonFields.PASSWORD.getValue());
         var response = createCourier(courierJson);
         response.then().assertThat().statusCode(400);
     }
@@ -82,7 +82,7 @@ public class CourierApiTests extends CommonTestsSteps {
     @Test
     public void allowToCreateCourierWithoutFirstNameResult201()
     {
-        var courierJson = removeParamFromJson(validCourierJson, CourierJsonFields.FIRST_NAME);
+        var courierJson = removeParamFromJson(validCourierJson, CourierJsonFields.FIRST_NAME.getValue());
         var response = createCourier(courierJson);
         response.then().assertThat().statusCode(201);
         isCourierExist = true;
@@ -114,7 +114,7 @@ public class CourierApiTests extends CommonTestsSteps {
 
     @Step("Логин курьера")
     public Response loginCourier(String courierJson) {
-        courierJson = removeParamFromJson(courierJson, CourierJsonFields.FIRST_NAME);
+        courierJson = removeParamFromJson(courierJson, CourierJsonFields.FIRST_NAME.getValue());
         var response =
                 given()
                         .header("Content-type", "application/json")

@@ -40,7 +40,7 @@ public class CourierLoginApiTests extends CommonTestsSteps {
         courierApiTests.createCourier(validCourierJson);
         var id = courierApiTests.loginCourier(validCourierJson).path("id").toString();
 
-        var courierJson = removeParamFromJson(validCourierJson, CourierJsonFields.LOGIN);
+        var courierJson = removeParamFromJson(validCourierJson, CourierJsonFields.LOGIN.getValue());
         var response = courierApiTests.loginCourier(courierJson);
         courierApiTests.deleteCourier(id);
         response.then().assertThat().statusCode(400);
@@ -52,7 +52,7 @@ public class CourierLoginApiTests extends CommonTestsSteps {
         courierApiTests.createCourier(validCourierJson);
         var id = courierApiTests.loginCourier(validCourierJson).path("id").toString();
 
-        var courierJson = removeParamFromJson(validCourierJson, CourierJsonFields.PASSWORD);
+        var courierJson = removeParamFromJson(validCourierJson, CourierJsonFields.PASSWORD.getValue());
         var response = courierApiTests.loginCourier(courierJson);
 
         courierApiTests.deleteCourier(id);
