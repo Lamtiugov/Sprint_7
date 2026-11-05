@@ -1,7 +1,5 @@
 import io.restassured.RestAssured;
-import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.yandex.praktikum.constants.CourierJsonFields;
@@ -9,7 +7,6 @@ import ru.yandex.praktikum.constants.CourierJsonFields;
 import java.io.IOException;
 
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.fail;
 
 public class CourierLoginApiTests extends CommonTestsSteps {
 
