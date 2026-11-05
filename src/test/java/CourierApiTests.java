@@ -2,19 +2,16 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import io.qameta.allure.Description;
 import io.qameta.allure.Step;
+
 import io.restassured.RestAssured;
-import io.restassured.config.HttpClientConfig;
 import io.restassured.response.Response;
-import jdk.jfr.Category;
-import org.apache.http.params.CoreConnectionPNames;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import ru.yandex.praktikum.Courier;
 import ru.yandex.praktikum.constants.CourierJsonFields;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -24,7 +21,7 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 
 @jdk.jfr.Description("Тесты /api/v1/courier")
-public class CourierApiTests {
+public class CourierApiTests extends CommonTestsSteps {
 
     private String validCourierJson = Files.readString(Path.of("src/test/resources/ValidCourierParams.json"), StandardCharsets.UTF_8);
     private boolean isCourierExist;
@@ -39,9 +36,9 @@ public class CourierApiTests {
     }
 
     @AfterEach
-    public void deleteCourier() {
+    public void deleteExistedCourier() {
         if (isCourierExist) {
-            String courierJson = removeParamFromJson(validCourierJson, CourierJsonFields.FIRST_NAME.getValue());
+            String courierJson = removeParamFromJson(validCourierJson, CourierJsonFields.FIRST_NAME);
             String id = loginCourier(courierJson).path("id").toString();
             // Удаление курьера по ID
             String deleteResult = deleteCourier(id);
@@ -71,7 +68,7 @@ public class CourierApiTests {
     @Test
     public void notAllowToCreateCourierWithoutLoginResult400()
     {
-        var courierJson = removeParamFromJson(validCourierJson, CourierJsonFields.LOGIN.getValue());
+        var courierJson = removeParamFromJson(validCourierJson, CourierJsonFields.LOGIN);
         var response = createCourier(courierJson);
         response.then().assertThat().statusCode(400);
     }
@@ -89,7 +86,7 @@ public class CourierApiTests {
     @Test
     public void allowToCreateCourierWithoutFirstNameResult201()
     {
-        var courierJson = removeParamFromJson(validCourierJson, CourierJsonFields.FIRST_NAME.getValue());
+        var courierJson = removeParamFromJson(validCourierJson, CourierJsonFields.FIRST_NAME);
         var response = createCourier(courierJson);
         response.then().assertThat().statusCode(201);
         isCourierExist = true;
@@ -101,8 +98,10 @@ public class CourierApiTests {
         createCourier(validCourierJson);
         isCourierExist = true;
         JsonObject jsonObject = new Gson().fromJson(String.valueOf(validCourierJson), JsonObject.class);
-        jsonObject.addProperty(CourierJsonFields.PASSWORD.getValue(), "11111");
+        jsonObject.addProperty();
         jsonObject.addProperty(CourierJsonFields.FIRST_NAME.getValue(), "11111");
+        var courierJson = setParamToJason(validCourierJson, CourierJsonFields.PASSWORD.getValue(), "11111");
+        courierJson = setParamToJason();
         var response = createCourier(jsonObject.toString());
         response.then().assertThat().statusCode(409);
     }
@@ -122,7 +121,7 @@ public class CourierApiTests {
 
     @Step("Логин курьера в системе с существующим Логином и правильным паролем")
     public Response loginCourier(String courierJson) {
-        courierJson = removeParamFromJson(courierJson, CourierJsonFields.FIRST_NAME.getValue());
+        courierJson = removeParamFromJson(courierJson, CourierJsonFields.FIRST_NAME);
         var response =
                 given()
                         .header("Content-type", "application/json")
@@ -143,12 +142,6 @@ public class CourierApiTests {
         System.out.println(response.body().asString());
         response.then().assertThat().statusCode(200);
         return response.body().asString();
-    }
-
-    public String removeParamFromJson(String json, String param) {
-        JsonObject jsonObject = new Gson().fromJson(String.valueOf(json), JsonObject.class);
-        jsonObject.remove(param);
-        return jsonObject.toString();
     }
 
     public String getValidCourierJson() {
