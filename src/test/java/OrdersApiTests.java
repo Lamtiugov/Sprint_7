@@ -2,10 +2,6 @@ import org.json.JSONArray;
 
 import java.util.HashMap;
 import java.util.List;
-import io.qameta.allure.Step;
-import io.restassured.RestAssured;
-import io.restassured.response.Response;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -16,13 +12,9 @@ import ru.yandex.praktikum.constants.OrderListRequestParams;
 import ru.yandex.praktikum.constants.ScooterColors;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.notNullValue;
 
 public class OrdersApiTests extends CommonTestsSteps {
