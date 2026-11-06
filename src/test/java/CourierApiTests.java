@@ -1,22 +1,11 @@
-import io.qameta.allure.Step;
-
-import io.restassured.RestAssured;
-import io.restassured.response.Response;
-
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+
 import ru.yandex.praktikum.constants.CourierJsonFields;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
-import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 
 @jdk.jfr.Description("Тесты /api/v1/courier")
@@ -30,7 +19,7 @@ public class CourierApiTests extends CommonTestsSteps {
     public void deleteExistedCourier() {
         if (isCourierExist) {
             var id = loginCourier(validCourierJson).path("id").toString();
-            var deleteResult = deleteCourier(id);
+            deleteCourier(id);
         }
     }
 
@@ -110,7 +99,7 @@ public class CourierApiTests extends CommonTestsSteps {
     @Test
     public void deleteCourierWithNotExistedID() {
         // Конечно тут надо бы ззалогиниться сперва попробовать...
-        var response = deleteCourier("-1");
+        var response = deleteCourier("0");
         response.then().assertThat().statusCode(404);
     }
 
