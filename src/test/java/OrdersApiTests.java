@@ -42,9 +42,9 @@ public class OrdersApiTests extends CommonTestsSteps {
     @DisplayName("Возвращается не пустой список заказов")
     @Test
     public void getAvailable10OrdersForCouriers() {
-        Map<String, Arguments> ordersParams = new HashMap<>();
-        ordersParams.put(OrderListRequestParams.LIMIT_NUM.getValue(), Arguments.of(10));
-        ordersParams.put(OrderListRequestParams.PAGE_NUM.getValue(), Arguments.of(0));
+        Map<String, Object> ordersParams = new HashMap<>();
+        ordersParams.put(OrderListRequestParams.LIMIT_NUM.getValue(), 10);
+        ordersParams.put(OrderListRequestParams.PAGE_NUM.getValue(), 0);
         var response = getOrdersList(ordersParams);
         response.then().body("orders", notNullValue());
     }

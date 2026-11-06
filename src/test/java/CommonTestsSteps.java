@@ -10,6 +10,9 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
@@ -63,7 +66,7 @@ public class CommonTestsSteps {
         return response;
     }
 
-    @Step("Удалить курьера по ID")
+    @Step("Удалить курьера по JSON")
     Response deleteCourierByJson(String json) {
         RestAssured.baseURI = "https://qa-scooter.education-services.ru/api/v1/courier";
         var response =
@@ -92,7 +95,7 @@ public class CommonTestsSteps {
     }
 
     @Step("Получение списка заказов с указанными параметрами")
-    public Response getOrdersList(Map<String, Arguments> ordersParams) {
+    public Response getOrdersList(Map<String, Object> ordersParams) {
         RestAssured.baseURI = "https://qa-scooter.education-services.ru/api/v1/orders";
         var response =
                 given()
