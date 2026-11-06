@@ -20,7 +20,6 @@ import static org.hamcrest.Matchers.equalTo;
 @jdk.jfr.Description("Тесты /api/v1/courier")
 public class CourierApiTests extends CommonTestsSteps {
 
-    private String validCourierJson = Files.readString(Path.of("src/test/resources/ValidCourierParams.json"), StandardCharsets.UTF_8);
     private boolean isCourierExist;
 
     public CourierApiTests() throws IOException {}
@@ -96,7 +95,7 @@ public class CourierApiTests extends CommonTestsSteps {
     }
 
 
-    @DisplayName("Удаление с пустым ID выдает 400")
+    @DisplayName("Ошибка. Удаление с пустым ID выдает 400")
     @Test
     public void deleteCourierWithoutID() {
         var response = deleteCourier("");
@@ -121,48 +120,4 @@ public class CourierApiTests extends CommonTestsSteps {
         response.then().assertThat().statusCode(404);
     }
 
-    @Step("Создание курьера")
-    public Response createCourier(String courierJson) {
-        var response =
-                given()
-                        .header("Content-type", "application/json")
-                        .auth().none()
-                        .body(courierJson)
-                        .when()
-                        .post();
-        System.out.println(response.asPrettyString());
-        return response;
-    }
-
-    @Step("Логин курьера")
-    public Response loginCourier(String courierJson) {
-        courierJson = removeParamFromJson(courierJson, CourierJsonFields.FIRST_NAME.getValue());
-        var response =
-                given()
-                        .header("Content-type", "application/json")
-                        .auth().none()
-                        .body(courierJson)
-                        .when()
-                        .post("login");
-        System.out.println(response.asPrettyString());
-        return response;
-    }
-
-    @Step("Удалить курьера по ID")
-    Response deleteCourier(String id) {
-        var response =
-                given()
-                        .when()
-                        .delete(id);
-        System.out.println(response.asPrettyString());
-        return response;
-    }
-
-    public String getValidCourierJson() {
-        return validCourierJson;
-    }
-
-    public boolean isCourierExist() {
-        return isCourierExist;
-    }
 }
