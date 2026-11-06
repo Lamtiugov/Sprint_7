@@ -29,11 +29,6 @@ public class OrdersApiTests extends CommonTestsSteps {
 
     public OrdersApiTests() throws IOException {}
 
-    @BeforeEach
-    public void setUp() {
-        RestAssured.baseURI = "https://qa-scooter.education-services.ru/api/v1/orders";
-    }
-
     @DisplayName("Можно указать цвет: BLACK, GREY, оба, пустой")
     @ParameterizedTest
     @MethodSource("scooterColors")

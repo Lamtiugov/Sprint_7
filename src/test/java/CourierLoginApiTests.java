@@ -13,11 +13,6 @@ public class CourierLoginApiTests extends CommonTestsSteps {
     public CourierLoginApiTests() throws IOException {
     }
 
-    @BeforeEach
-    public void setUp() {
-        RestAssured.baseURI = "https://qa-scooter.education-services.ru/api/v1/courier";
-    }
-
     @DisplayName("Существующий курьер может авторизоваться и возвращается его id")
     @Test
     public void existedCourierCanLoginResult200() {

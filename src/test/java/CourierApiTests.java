@@ -26,11 +26,6 @@ public class CourierApiTests extends CommonTestsSteps {
 
     public CourierApiTests() throws IOException {}
 
-    @BeforeEach
-    public void setUp() {
-        RestAssured.baseURI = "https://qa-scooter.education-services.ru/api/v1/courier";
-    }
-
     @AfterEach
     public void deleteExistedCourier() {
         if (isCourierExist) {
