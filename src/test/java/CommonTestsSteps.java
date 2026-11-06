@@ -1,4 +1,5 @@
 import io.qameta.allure.Step;
+import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -23,6 +24,7 @@ public class CommonTestsSteps {
 
     @Step("Создание курьера")
     public Response createCourier(String courierJson) {
+        RestAssured.baseURI = "https://qa-scooter.education-services.ru/api/v1/courier";
         var response =
                 given()
                         .header("Content-type", "application/json")
@@ -36,6 +38,7 @@ public class CommonTestsSteps {
 
     @Step("Логин курьера")
     public Response loginCourier(String courierJson) {
+        RestAssured.baseURI = "https://qa-scooter.education-services.ru/api/v1/courier";
         courierJson = removeParamFromJson(courierJson, CourierJsonFields.FIRST_NAME.getValue());
         var response =
                 given()
@@ -51,6 +54,7 @@ public class CommonTestsSteps {
     @Step("Удалить курьера по параметру ID")
     // Хотя по спеке тут json нужен...
     Response deleteCourier(String id) {
+        RestAssured.baseURI = "https://qa-scooter.education-services.ru/api/v1/courier";
         var response =
                 given()
                         .when()
@@ -61,6 +65,7 @@ public class CommonTestsSteps {
 
     @Step("Удалить курьера по ID")
     Response deleteCourierByJson(String json) {
+        RestAssured.baseURI = "https://qa-scooter.education-services.ru/api/v1/courier";
         var response =
                 given()
                         .header("Content-type", "application/json")
@@ -74,6 +79,7 @@ public class CommonTestsSteps {
 
     @Step("Создание заказа")
     public Response createOrder(String orderJson) {
+        RestAssured.baseURI = "https://qa-scooter.education-services.ru/api/v1/orders";
         var response =
                 given()
                         .header("Content-type", "application/json")
@@ -87,6 +93,7 @@ public class CommonTestsSteps {
 
     @Step("Получение списка заказов с указанными параметрами")
     public Response getOrdersList(Map<String, Arguments> ordersParams) {
+        RestAssured.baseURI = "https://qa-scooter.education-services.ru/api/v1/orders";
         var response =
                 given()
                         .queryParams(ordersParams)
