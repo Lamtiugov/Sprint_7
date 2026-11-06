@@ -38,7 +38,7 @@ public class CourierApiTests extends CommonTestsSteps {
         isCourierExist = true;
         createCourier(validCourierJson).then().assertThat().statusCode(409)
                 .and()
-                .body("message", equalTo("Этот логин уже используется"));
+                .body("message", equalTo("Этот логин уже используется. Попробуйте другой."));
     }
 
     @DisplayName("Нельзя создать пользователя без login")
@@ -77,7 +77,7 @@ public class CourierApiTests extends CommonTestsSteps {
 
         createCourier(courierJson).then().assertThat().statusCode(409)
                 .and()
-                .body("message", equalTo("Этот логин уже используется"));
+                .body("message", equalTo("Этот логин уже используется. Попробуйте другой."));
     }
 
     @DisplayName("Ошибка. Удаление с пустым ID выдает 400")
@@ -100,7 +100,7 @@ public class CourierApiTests extends CommonTestsSteps {
         // Конечно тут надо бы ззалогиниться сперва попробовать...
         deleteCourier("0").then().assertThat().statusCode(404)
                 .and()
-                .body("message", equalTo("Курьера с таким id нет"));
+                .body("message", equalTo("Курьера с таким id нет."));
     }
 
     @DisplayName("Удаление с пустым ID выдает 400")
