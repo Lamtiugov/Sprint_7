@@ -1,12 +1,9 @@
 import io.qameta.allure.Step;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.junit.jupiter.api.BeforeEach;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.provider.Arguments;
 import ru.yandex.praktikum.constants.OrderListRequestParams;
 
 import java.io.IOException;
@@ -14,7 +11,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
-import static io.restassured.RestAssured.when;
 import static org.hamcrest.Matchers.equalTo;
 
 public class OrdersAcceptApiTests extends CommonTestsSteps {
@@ -34,7 +30,9 @@ public class OrdersAcceptApiTests extends CommonTestsSteps {
         var courierId = loginCourier(validCourierJson).path("id").toString();
         var response = acceptOrder(orderId, courierId);
         deleteCourier(courierId);
-        response.then().assertThat().statusCode(200);
+        response.then().assertThat().statusCode(200)
+                .and()
+                .body("ok", equalTo(true));
     }
 
     @DisplayName("Если не передать id курьера, запрос вернёт 400")
@@ -47,7 +45,9 @@ public class OrdersAcceptApiTests extends CommonTestsSteps {
 
         var courierId = "";
         var response = acceptOrder(orderId, courierId);
-        response.then().assertThat().statusCode(400);
+        response.then().assertThat().statusCode(400)
+                .and()
+                .body("message", equalTo("Недостаточно данных для поиска"));
     }
 
     @DisplayName("Если передать несуществующий id курьера, запрос вернёт 404")
@@ -74,7 +74,9 @@ public class OrdersAcceptApiTests extends CommonTestsSteps {
         var courierId = loginCourier(validCourierJson).path("id").toString();
         var response = acceptOrder(orderId, courierId);
         deleteCourier(courierId);
-        response.then().assertThat().statusCode(400);
+        response.then().assertThat().statusCode(400)
+                .and()
+                .body("message", equalTo("Недостаточно данных для поиска"));
     }
 
     @DisplayName("Если передать несуществующий id заказа, запрос вернёт 404")
