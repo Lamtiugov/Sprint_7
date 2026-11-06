@@ -26,8 +26,7 @@ public class CourierApiTests extends CommonTestsSteps {
     @DisplayName("Создание курьера с валидными значениями")
     @Test
     public void createCourierResult201() {
-        var response = createCourier(validCourierJson);
-        response.then().assertThat().statusCode(201)
+        createCourier(validCourierJson).then().assertThat().statusCode(201)
                 .and()
                 .body("ok", equalTo(true));
         isCourierExist = true;
@@ -36,34 +35,36 @@ public class CourierApiTests extends CommonTestsSteps {
     @DisplayName("Нельзя создать двух одинаковых курьеров")
     @Test
     public void notAllowToCreateCourierCloneResult409() {
-        var response = createCourier(validCourierJson);
+        createCourier(validCourierJson);
         isCourierExist = true;
-        response = createCourier(validCourierJson);
-        response.then().assertThat().statusCode(409);
+        createCourier(validCourierJson).then().assertThat().statusCode(409)
+                .and()
+                .body("message", equalTo("Этот логин уже используется"));
     }
 
     @DisplayName("Нельзя создать пользователя без login")
     @Test
     public void notAllowToCreateCourierWithoutLoginResult400() {
         var courierJson = removeParamFromJson(validCourierJson, CourierJsonFields.LOGIN.getValue());
-        var response = createCourier(courierJson);
-        response.then().assertThat().statusCode(400);
+        createCourier(courierJson).then().assertThat().statusCode(400)
+                .and()
+                .body("message", equalTo("Недостаточно данных для создания учетной записи"));
     }
 
     @DisplayName("Нельзя создать пользователя без password")
     @Test
     public void notAllowToCreateCourierWithoutPasswordResult400() {
         var courierJson = removeParamFromJson(validCourierJson, CourierJsonFields.PASSWORD.getValue());
-        var response = createCourier(courierJson);
-        response.then().assertThat().statusCode(400);
+        createCourier(courierJson).then().assertThat().statusCode(400)
+                .and()
+                .body("message", equalTo("Недостаточно данных для создания учетной записи"));
     }
 
     @DisplayName("Ошибка: можно создать пользователя без First Name")
     @Test
     public void allowToCreateCourierWithoutFirstNameResult201() {
         var courierJson = removeParamFromJson(validCourierJson, CourierJsonFields.FIRST_NAME.getValue());
-        var response = createCourier(courierJson);
-        response.then().assertThat().statusCode(201);
+        createCourier(courierJson).then().assertThat().statusCode(201);
         isCourierExist = true;
     }
 
@@ -72,10 +73,11 @@ public class CourierApiTests extends CommonTestsSteps {
     public void notAllowToCreateWithExistedLoginResult409() {
         createCourier(validCourierJson);
         isCourierExist = true;
-        var courierJson = setParamToJson(validCourierJson, CourierJsonFields.PASSWORD.getValue(), "11111");
-        courierJson = setParamToJson(validCourierJson, CourierJsonFields.FIRST_NAME.getValue(), "11111");
-        var response = createCourier(courierJson);
-        response.then().assertThat().statusCode(409);
+        var courierJson = setParamToJson(validCourierJson, CourierJsonFields.PASSWORD.getValue(), "0");
+        courierJson = setParamToJson(validCourierJson, CourierJsonFields.FIRST_NAME.getValue(), "0");
+        createCourier(courierJson).then().assertThat().statusCode(409)
+                .and()
+                .body("message", equalTo("Этот логин уже используется"));
     }
 
     @DisplayName("Ошибка. Удаление с пустым ID выдает 400")
@@ -100,14 +102,18 @@ public class CourierApiTests extends CommonTestsSteps {
     public void deleteCourierWithNotExistedID() {
         // Конечно тут надо бы ззалогиниться сперва попробовать...
         var response = deleteCourier("0");
-        response.then().assertThat().statusCode(404);
+        response.then().assertThat().statusCode(404)
+                .and()
+                .body("message", equalTo("Курьера с таким id нет"));
     }
 
     @DisplayName("Удаление с пустым ID выдает 400")
     @Test
     public void deleteCourierWithEmptyIdResult400() {
         var response = deleteCourier("");
-        response.then().assertThat().statusCode(400);
+        response.then().assertThat().statusCode(400)
+                .and()
+                .body("message", equalTo("Недостаточно данных для удаления курьера"));
     }
 
     @DisplayName("Удаление по json существующего курьера")
