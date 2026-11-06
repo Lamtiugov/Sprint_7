@@ -8,7 +8,6 @@ import java.io.IOException;
 
 import static org.hamcrest.Matchers.equalTo;
 
-@jdk.jfr.Description("Тесты /api/v1/courier")
 public class CourierApiTests extends CommonTestsSteps {
 
     private boolean isCourierExist;
@@ -75,6 +74,7 @@ public class CourierApiTests extends CommonTestsSteps {
         isCourierExist = true;
         var courierJson = setParamToJson(validCourierJson, CourierJsonFields.PASSWORD.getValue(), "0");
         courierJson = setParamToJson(validCourierJson, CourierJsonFields.FIRST_NAME.getValue(), "0");
+
         createCourier(courierJson).then().assertThat().statusCode(409)
                 .and()
                 .body("message", equalTo("Этот логин уже используется"));
@@ -83,26 +83,22 @@ public class CourierApiTests extends CommonTestsSteps {
     @DisplayName("Ошибка. Удаление с пустым ID выдает 400")
     @Test
     public void deleteCourierWithoutID() {
-        var response = deleteCourier("");
-        response.then().assertThat().statusCode(400);
+        deleteCourier("").then().assertThat().statusCode(400);
     }
 
     @DisplayName("Успешное удаление возвращает ok: true")
     @Test
     public void deleteWithExistedIdReturnOkTrue() {
         createCourier(validCourierJson);
-        var response = loginCourier(validCourierJson);
-        var id = response.path("id").toString();
-        response = deleteCourier(id);
-        response.then().assertThat().body("ok", equalTo(true));
+        var id = loginCourier(validCourierJson).path("id").toString();
+        deleteCourier(id).then().assertThat().body("ok", equalTo(true));
     }
 
     @DisplayName("Удаление с несуществующим ID выдает 404")
     @Test
     public void deleteCourierWithNotExistedID() {
         // Конечно тут надо бы ззалогиниться сперва попробовать...
-        var response = deleteCourier("0");
-        response.then().assertThat().statusCode(404)
+        deleteCourier("0").then().assertThat().statusCode(404)
                 .and()
                 .body("message", equalTo("Курьера с таким id нет"));
     }
@@ -110,8 +106,7 @@ public class CourierApiTests extends CommonTestsSteps {
     @DisplayName("Удаление с пустым ID выдает 400")
     @Test
     public void deleteCourierWithEmptyIdResult400() {
-        var response = deleteCourier("");
-        response.then().assertThat().statusCode(400)
+        deleteCourier("").then().assertThat().statusCode(400)
                 .and()
                 .body("message", equalTo("Недостаточно данных для удаления курьера"));
     }
@@ -122,9 +117,8 @@ public class CourierApiTests extends CommonTestsSteps {
         createCourier(validCourierJson);
         isCourierExist = true;
         var json4Delete = loginCourier(validCourierJson).body().asString();  // Ответ совпадает с json для удаления
-        var response = deleteCourierByJson(json4Delete);
 
-        response.then().assertThat().statusCode(200);
+        deleteCourierByJson(json4Delete).then().assertThat().statusCode(200);
     }
 
 }

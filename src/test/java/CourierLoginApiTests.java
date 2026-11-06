@@ -8,8 +8,7 @@ import static org.hamcrest.Matchers.*;
 
 public class CourierLoginApiTests extends CommonTestsSteps {
 
-    public CourierLoginApiTests() throws IOException {
-    }
+    public CourierLoginApiTests() throws IOException {}
 
     @DisplayName("Существующий курьер может авторизоваться и возвращается его id")
     @Test
@@ -30,8 +29,12 @@ public class CourierLoginApiTests extends CommonTestsSteps {
 
         var courierJson = removeParamFromJson(validCourierJson, CourierJsonFields.LOGIN.getValue());
         var response = loginCourier(courierJson);
+
         deleteCourier(id);
-        response.then().assertThat().statusCode(400);
+
+        response.then().assertThat().statusCode(400)
+                .and()
+                .body("message", equalTo("Недостаточно данных для входа"));
     }
 
     @DisplayName("Для авторизации нужно передать поле password")
@@ -45,7 +48,9 @@ public class CourierLoginApiTests extends CommonTestsSteps {
 
         deleteCourier(id);
 
-        response.then().assertThat().statusCode(400);
+        response.then().assertThat().statusCode(400)
+                .and()
+                .body("message", equalTo("Недостаточно данных для входа"));
     }
 
     @DisplayName("Система вернёт ошибку, если неправильно указать пароль")
@@ -54,12 +59,14 @@ public class CourierLoginApiTests extends CommonTestsSteps {
         createCourier(validCourierJson);
         var id = loginCourier(validCourierJson).path("id").toString();
 
-        var courierJson = setParamToJson(validCourierJson, CourierJsonFields.PASSWORD.getValue(), "111111");
+        var courierJson = setParamToJson(validCourierJson, CourierJsonFields.PASSWORD.getValue(), "0");
         var response = loginCourier(courierJson);
 
         deleteCourier(id);
 
-        response.then().assertThat().statusCode(404);
+        response.then().assertThat().statusCode(404)
+                .and()
+                .body("message", equalTo("Учетная запись не найдена"));
     }
 
     @DisplayName("Система вернёт ошибку, если неправильно указать логин")
@@ -68,24 +75,27 @@ public class CourierLoginApiTests extends CommonTestsSteps {
         createCourier(validCourierJson);
         var id = loginCourier(validCourierJson).path("id").toString();
 
-        var courierJson = setParamToJson(validCourierJson, CourierJsonFields.LOGIN.getValue(), "111111");
+        var courierJson = setParamToJson(validCourierJson, CourierJsonFields.LOGIN.getValue(), "0");
         var response = loginCourier(courierJson);
 
         deleteCourier(id);
 
-        response.then().assertThat().statusCode(404);
+        response.then().assertThat().statusCode(404)
+                .and()
+                .body("message", equalTo("Учетная запись не найдена"));
     }
 
     @DisplayName("Нельзя авторизоваться под несуществующим пользователем")
     @Test
     public void notAllowLoginNotExistedCourierResult404() {
-        var courierJson = setParamToJson("{}", CourierJsonFields.LOGIN.getValue(), "-1");
-        courierJson = setParamToJson(courierJson, CourierJsonFields.PASSWORD.getValue(), "-1");
-        courierJson = setParamToJson(courierJson, CourierJsonFields.FIRST_NAME.getValue(), "-1");
+        var courierJson = setParamToJson("{}", CourierJsonFields.LOGIN.getValue(), "0");
+        courierJson = setParamToJson(courierJson, CourierJsonFields.PASSWORD.getValue(), "0");
+        courierJson = setParamToJson(courierJson, CourierJsonFields.FIRST_NAME.getValue(), "0");
 
-        var response = loginCourier(courierJson);
-
-        response.then().assertThat().statusCode(404);
+        loginCourier(courierJson).then().assertThat()
+                .statusCode(404)
+                .and()
+                .body("message", equalTo("Учетная запись не найдена"));
     }
 
 }
