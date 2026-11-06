@@ -7,6 +7,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import ru.yandex.praktikum.constants.CourierJsonFields;
 
 import java.io.IOException;
@@ -32,9 +34,7 @@ public class CourierApiTests extends CommonTestsSteps {
     @AfterEach
     public void deleteExistedCourier() {
         if (isCourierExist) {
-            var courierJson = removeParamFromJson(validCourierJson, CourierJsonFields.FIRST_NAME.getValue());
-            var id = loginCourier(courierJson).path("id").toString();
-            // Удаление курьера по ID
+            var id = loginCourier(validCourierJson).path("id").toString();
             var deleteResult = deleteCourier(id);
         }
     }
@@ -94,7 +94,6 @@ public class CourierApiTests extends CommonTestsSteps {
         response.then().assertThat().statusCode(409);
     }
 
-
     @DisplayName("Ошибка. Удаление с пустым ID выдает 400")
     @Test
     public void deleteCourierWithoutID() {
@@ -118,6 +117,24 @@ public class CourierApiTests extends CommonTestsSteps {
         // Конечно тут надо бы ззалогиниться сперва попробовать...
         var response = deleteCourier("-1");
         response.then().assertThat().statusCode(404);
+    }
+
+    @DisplayName("Удаление с пустым ID выдает 400")
+    @Test
+    public void deleteCourierWithEmptyIdResult400() {
+        var response = deleteCourier("");
+        response.then().assertThat().statusCode(400);
+    }
+
+    @DisplayName("Удаление по json существующего курьера")
+    @Test
+    public void deleteExistedCourierByJsonResult200() {
+        createCourier(validCourierJson);
+        isCourierExist = true;
+        var json4Delete = loginCourier(validCourierJson).body().asString();  // Ответ совпадает с json для удаления
+        var response = deleteCourierByJson(json4Delete);
+
+        response.then().assertThat().statusCode(200);
     }
 
 }

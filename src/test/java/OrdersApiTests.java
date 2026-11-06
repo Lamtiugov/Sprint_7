@@ -27,8 +27,6 @@ import static org.hamcrest.Matchers.notNullValue;
 
 public class OrdersApiTests extends CommonTestsSteps {
 
-    private String validOrderJson = Files.readString(Path.of("src/test/resources/ValidOrderParams.json"), StandardCharsets.UTF_8);
-
     public OrdersApiTests() throws IOException {}
 
     @BeforeEach
@@ -54,30 +52,6 @@ public class OrdersApiTests extends CommonTestsSteps {
         ordersParams.put(OrderListRequestParams.PAGE_NUM.getValue(), Arguments.of(0));
         var response = getOrdersList(ordersParams);
         response.then().body("orders", notNullValue());
-    }
-
-    @Step("Создание заказа")
-    public Response createOrder(String orderJson) {
-        var response =
-                given()
-                        .header("Content-type", "application/json")
-                        .auth().none()
-                        .body(orderJson)
-                        .when()
-                        .post();
-        System.out.println(response.body().asString());
-        return response;
-    }
-
-    @Step("Получение списка заказов с указанными параметрами")
-    public Response getOrdersList(Map<String, Arguments> ordersParams) {
-        var response =
-                given()
-                        .queryParams(ordersParams)
-                        .when()
-                        .get();
-        System.out.println(response.body().asString());
-        return response;
     }
 
     static Stream<Arguments> scooterColors() {
