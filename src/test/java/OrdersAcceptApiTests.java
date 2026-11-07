@@ -101,7 +101,6 @@ public class OrdersAcceptApiTests extends CommonTestsSteps {
                         .queryParam("courierId", courierId)
                         .when()
                         .put(orderId);
-        System.out.println(response.asPrettyString());
         return response;
     }
 

@@ -52,7 +52,6 @@ public class OrdersTrackApiTests extends CommonTestsSteps {
                         .queryParam("t", id)
                         .when()
                         .get();
-        System.out.println(response.asPrettyString());
         return response;
     }
 

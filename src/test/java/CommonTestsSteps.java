@@ -32,7 +32,6 @@ public class CommonTestsSteps {
                         .body(courierJson)
                         .when()
                         .post();
-        System.out.println(response.asPrettyString());
         return response;
     }
 
@@ -47,7 +46,6 @@ public class CommonTestsSteps {
                         .body(courierJson)
                         .when()
                         .post("login");
-        System.out.println(response.asPrettyString());
         return response;
     }
 
@@ -59,7 +57,6 @@ public class CommonTestsSteps {
                 given()
                         .when()
                         .delete(id);
-        System.out.println(response.asPrettyString());
         return response;
     }
 
@@ -73,7 +70,6 @@ public class CommonTestsSteps {
                         .body(json)
                         .when()
                         .delete();
-        System.out.println(response.asPrettyString());
         return response;
     }
 
@@ -87,7 +83,6 @@ public class CommonTestsSteps {
                         .body(orderJson)
                         .when()
                         .post();
-        System.out.println(response.asPrettyString());
         return response;
     }
 
@@ -99,7 +94,6 @@ public class CommonTestsSteps {
                         .queryParams(ordersParams)
                         .when()
                         .get();
-        System.out.println(response.asPrettyString());
         return response;
     }
 
